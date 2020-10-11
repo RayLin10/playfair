@@ -45,15 +45,56 @@ public class Playfair {
     }
 
     // When two letters are on the same column, encode by using the letters to the right of them or decode by using the letters to the left of them
-    public static String horizontalEncode(String letterPair, String key, int shift) {
+    public static String horizontalEncode(String letterPair, String key, int direction) {
+        String letterOne, letterTwo, newLetterOne, newLetterTwo, output;
+        int oneRow, twoRow, shift = direction;
+        letterOne = String.valueOf(letterPair.charAt(0));
+        letterTwo = String.valueOf(letterPair.charAt(1));
+        oneRow = key.indexOf(letterOne) / 5;
+        twoRow = key.indexOf(letterTwo) / 5;
 
-        return "";
+        // 0 = Encode, 1 = Decode
+        if (shift == 0) {
+            if (((key.indexOf(letterOne) + 1) / 5 != oneRow) || ((key.indexOf(letterTwo) + 1) / 5 != twoRow)) {
+                newLetterOne = String.valueOf(key.charAt(key.indexOf(letterOne) + 1 - 5));
+                newLetterTwo = String.valueOf(key.charAt(key.indexOf(letterTwo) + 1 - 5));
+            }
+            else {
+                newLetterOne = String.valueOf(key.charAt(key.indexOf(letterOne) + 1));
+                newLetterTwo = String.valueOf(key.charAt(key.indexOf(letterTwo) + 1));
+            }
+        }
+        else {
+            if (((key.indexOf(letterOne) - 1) / 5 != oneRow) || ((key.indexOf(letterTwo) - 1) / 5 != twoRow)) {
+                newLetterOne = String.valueOf(key.charAt(key.indexOf(letterOne) + 4));
+                newLetterTwo = String.valueOf(key.charAt(key.indexOf(letterTwo) + 4));
+            }
+            else {
+                newLetterOne = String.valueOf(key.charAt(key.indexOf(letterOne) - 1));
+                newLetterTwo = String.valueOf(key.charAt(key.indexOf(letterTwo) - 1));
+            }
+        }
+
+        output = newLetterOne + newLetterTwo;
+        return output;
     }
 
     // Encode or decode by using the letters on the same row but in the column of the other letter
     public static String regularEncode(String letterPair, String key) {
+        String letterOne, letterTwo, newLetterOne, newLetterTwo, output;
+        int oneRow, oneColumn, twoRow, twoColumn;
+        letterOne = String.valueOf(letterPair.charAt(0));
+        letterTwo = String.valueOf(letterPair.charAt(1));
+        oneRow = key.indexOf(letterOne) / 5;
+        oneColumn = key.indexOf(letterOne) % 5;
+        twoRow = key.indexOf(letterTwo) / 5;
+        twoColumn = key.indexOf(letterTwo) % 5;
 
-        return "";
+        newLetterOne = String.valueOf(key.charAt((oneRow * 5) + twoColumn));
+        newLetterTwo = String.valueOf(key.charAt((twoRow * 5) + oneColumn)); 
+
+        output = newLetterOne + newLetterTwo;
+        return output;
     }
 
     public static void main (String[] args) {
@@ -86,7 +127,7 @@ public class Playfair {
             letterPairList.add(inputText.substring(x, x + 2));
         }
 
-        outputText = verticalEncode(letterPairList.get(0), key, 0);
+        outputText = regularEncode(letterPairList.get(0), key);
 
         System.out.println(outputText);
     }
