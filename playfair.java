@@ -17,18 +17,42 @@ public class Playfair {
         return output;
     }
 
-    // Encode when two letters are on the same row by using the letters below them
-    public static String verticalEncode(String letterPair) {
+    // When two letters are on the same row, encode by using the letters below them or decode by using the letters above them
+    public static String verticalEncode(String letterPair, String key, int direction) {
+            String letterOne, letterTwo, newLetterOne, newLetterTwo, output;
+            int shift = direction;
+            letterOne = String.valueOf(letterPair.charAt(0));
+            letterTwo = String.valueOf(letterPair.charAt(1));
+            
+            // 0 = Encode, 1 = Decode
+            if (shift == 0) {
+                newLetterOne = String.valueOf(key.charAt((key.indexOf(letterOne) + 5) % 25));
+                newLetterTwo = String.valueOf(key.charAt((key.indexOf(letterTwo) + 5) % 25));
+            }
+            else {
+                if ((key.indexOf(letterOne) - 5 < 0) || (key.indexOf(letterTwo) - 5 < 0)) {
+                    newLetterOne = String.valueOf(key.charAt(25 + key.indexOf(letterOne) - 5));
+                    newLetterTwo = String.valueOf(key.charAt(25 + key.indexOf(letterTwo) - 5));
+                }
+                else {
+                    newLetterOne = String.valueOf(key.charAt(key.indexOf(letterOne) - 5));
+                    newLetterTwo = String.valueOf(key.charAt(key.indexOf(letterTwo) - 5));
+                }
+            }
+
+            output = newLetterOne + newLetterTwo;
+        return output;
+    }
+
+    // When two letters are on the same column, encode by using the letters to the right of them or decode by using the letters to the left of them
+    public static String horizontalEncode(String letterPair, String key, int shift) {
+
         return "";
     }
 
-    // Encode when two letters are on the same column by using the letters to the right of them
-    public static String horizontalEncode(String letterPair) {
-        return "";
-    }
+    // Encode or decode by using the letters on the same row but in the column of the other letter
+    public static String regularEncode(String letterPair, String key) {
 
-    // Encode by using the letters on the same row but in the column of the other letter
-    public static String regularEncode(String letterPair) {
         return "";
     }
 
@@ -62,6 +86,8 @@ public class Playfair {
             letterPairList.add(inputText.substring(x, x + 2));
         }
 
-        System.out.println(letterPairList);
+        outputText = verticalEncode(letterPairList.get(0), key, 0);
+
+        System.out.println(outputText);
     }
 }
