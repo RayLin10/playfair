@@ -103,7 +103,7 @@ public class Playfair {
         }
 
         boolean encode = false, decode = false;
-        String inputText, outputText, key;
+        String inputText, outputText = "", key;
 
         if (args[0].equals("encode")) {
             encode = true;
@@ -115,10 +115,17 @@ public class Playfair {
         inputText = args[1];
         key = args[2];
 
-        inputText = insertX(inputText);
-        // Add a z to the end if there's an odd # of letters
-        if ((inputText.length() % 2) != 0) {
-            inputText = inputText + "Z";
+        inputText = inputText.toUpperCase();
+        if (encode) {
+            while (inputText.indexOf("J") >= 0) {
+                int replaceIndex = inputText.indexOf("J");
+                inputText = inputText.substring(0, replaceIndex) + "I" + inputText.substring(replaceIndex + 1, inputText.length());
+            }
+            inputText = insertX(inputText);
+            // Add a z to the end if there's an odd # of letters
+            if ((inputText.length() % 2) != 0) {
+                inputText = inputText + "Z";
+            }
         }
 
         // Separate text into pairs of letters
@@ -127,7 +134,40 @@ public class Playfair {
             letterPairList.add(inputText.substring(x, x + 2));
         }
 
-        outputText = regularEncode(letterPairList.get(0), key);
+        List<String> letterPairOutput = new ArrayList<String>();
+        // Goes through pairs and encode or decode them
+        for (int x =0; x < letterPairList.size(); x++) {
+            String letterOne, letterTwo;
+            int oneRow, oneColumn, twoRow, twoColumn, shiftValue;
+            letterOne = String.valueOf(letterPairList.get(x).charAt(0));
+            letterTwo = String.valueOf(letterPairList.get(x).charAt(1));
+            oneRow = key.indexOf(letterOne) / 5;
+            oneColumn = key.indexOf(letterOne) % 5;
+            twoRow = key.indexOf(letterTwo) / 5;
+            twoColumn = key.indexOf(letterTwo) % 5;
+            if (encode) {
+                shiftValue = 0;
+            }
+            else {
+                shiftValue = 1;
+            }
+            if (oneRow == twoRow) {
+                    letterPairOutput.add(verticalEncode(letterPairList.get(x), key, shiftValue));
+                }
+                else {
+                    if (oneColumn == twoColumn) {
+                        letterPairOutput.add(horizontalEncode(letterPairList.get(x), key, shiftValue));
+                    }
+                    else {
+                        letterPairOutput.add(regularEncode(letterPairList.get(x), key));
+                    }
+                }
+        }
+
+        // Put together pairs of letter to create the output
+        for (int x = 0; x < letterPairOutput.size(); x++) {
+            outputText = outputText + letterPairOutput.get(x);
+        }
 
         System.out.println(outputText);
     }
